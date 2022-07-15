@@ -26,37 +26,66 @@ namespace GD_Summer
             Console.SetBufferSize(Const.ScreenWidth, Const.ScreenHeight);
             Console.CursorVisible = false;
 
-            Snake snake = new Snake(Const.MapWidth / 2, Const.MapHeight / 2, DisplaySymbols.SnakeSymbol);
-            FPSCounter FPSCounter = new FPSCounter();
+            var snakeGame = new SnakeGame();
+            snakeGame.StartLoop();
+        }
+    }
 
+    public class SnakeGame : GameLoop
+    {
+        protected override int _timing { get; set; }
+        
+        private Snake snake;
+
+        private FPSCounter fpsCounter;
+
+        public SnakeGame()
+        {
+             snake = new Snake(Const.MapWidth / 2, Const.MapHeight / 2, DisplaySymbols.SnakeSymbol);
+            fpsCounter = new FPSCounter();
+            _timing = 100;
+        }
+
+        public override void StartLoop()
+        {
             while (true)
             {
-                FPSCounter.GetStartFrameTime();
+                fpsCounter.GetStartFrameTime();
 
-                //Timing
-                Thread.Sleep(100);
+                base.StartLoop();
 
-                //Input
-                if (Console.KeyAvailable)
-                {
-                    var key = Console.ReadKey();
-                    snake.CheckDirection(key);
-                }
+                fpsCounter.GetEndFrameTime();
 
-                //Update
-                snake.SnakeUpdate();
-
-                //Render
-                Console.Clear();
-
-                Borders.DrawBorders();
-                snake.DrawPixel();
-
-                FPSCounter.GetEndFrameTime();
-
-                FPSCounter.UpdateFPSCounter();
-                FPSCounter.DrawFPSCounter();
+                FPSUpdate();
             }
+        }
+
+        protected override void Input()
+        {
+            if (Console.KeyAvailable)
+            {
+                var key = Console.ReadKey();
+                snake.CheckDirection(key);
+            }
+        }
+
+        protected override void Update()
+        {
+            snake.SnakeUpdate();
+        }
+
+        protected override void Render()
+        {
+            Console.Clear();
+
+            Borders.DrawBorders();
+            snake.DrawPixel();
+        }
+
+        private void FPSUpdate()
+        {
+            fpsCounter.UpdateFPSCounter();
+            fpsCounter.DrawFPSCounter();
         }
     }
 
@@ -85,6 +114,7 @@ namespace GD_Summer
             Console.Write(Symbol);
         }
     }
+
     public class Snake : Pixel
     {
         private enum SnakeDirection
@@ -99,9 +129,7 @@ namespace GD_Summer
         private const int snakeMoveSpeed = 1;
 
         public Snake(int x, int y, char symbol) : base(x, y, symbol)
-        {
-
-        }
+        {}
 
         public void CheckDirection(ConsoleKeyInfo keyInfo)
         {
@@ -158,6 +186,7 @@ namespace GD_Summer
             }
         }
     }
+
     public static class Borders
     {
         public static void DrawBorders()
@@ -184,8 +213,8 @@ namespace GD_Summer
 
     public class FPSCounter
     {
-        private long startFrameTime = DateTime.Now.Ticks;
-        private long endFrameTime = DateTime.Now.Ticks;
+        private long startFrameTime;
+        private long endFrameTime;
 
         private double framesCounter;
 
@@ -197,7 +226,7 @@ namespace GD_Summer
 
         public void UpdateFPSCounter()
         {
-            if (endFrameTime - startFrameTime != 0)
+            if (endFrameTime - startFrameTime > 0)
             {
                 framesCounter = 1000 / (endFrameTime - startFrameTime);
             }
