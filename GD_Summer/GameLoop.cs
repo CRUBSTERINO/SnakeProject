@@ -5,12 +5,15 @@ namespace GD_Summer
     public abstract class GameLoop
     {
         protected virtual int _timing { get; set; }
-        public virtual void StartLoop()
+        public void StartLoop()
         {
-            Timing();
-            Input();
-            Update();
-            Render();
+            while (true)
+            {
+                Timing();
+                Input();
+                Update();
+                Render();
+            }
         }
 
         private void Timing()

@@ -11,11 +11,11 @@ namespace GD_Summer
         public const int ScreenWidth = 100;
         public const int ScreenHeight = 45;
 
-        public const int MapWidth = 80;
+        public const int MapWidth = 100;
         public const int MapHeight = 45;
 
-        public const int UIWidth = ScreenWidth - MapWidth;
-        public const int UIHeight = ScreenHeight;
+        public const int UIWidth = 0;
+        public const int UIHeight = 0;
     }
 
     public class Program
@@ -31,33 +31,33 @@ namespace GD_Summer
         }
     }
 
+    public static class StringBuilder
+    {
+        private static char[] charArray = new char[Const.ScreenWidth * Const.ScreenHeight];
+
+        public static void AddToArray(Pixel pixel)
+        {
+            charArray[pixel.PostionY * Const.MapWidth + pixel.PostionX] = pixel.Symbol;
+        }
+
+        public static string ReturnString() => new string(charArray);
+
+        public static void ClearArray()
+        {
+            Array.Clear(charArray, 0, charArray.Length);
+        }
+    }
+
     public class SnakeGame : GameLoop
     {
         protected override int _timing { get; set; }
         
         private Snake snake;
 
-        private FPSCounter fpsCounter;
-
         public SnakeGame()
         {
              snake = new Snake(Const.MapWidth / 2, Const.MapHeight / 2, DisplaySymbols.SnakeSymbol);
-            fpsCounter = new FPSCounter();
             _timing = 100;
-        }
-
-        public override void StartLoop()
-        {
-            while (true)
-            {
-                fpsCounter.GetStartFrameTime();
-
-                base.StartLoop();
-
-                fpsCounter.GetEndFrameTime();
-
-                FPSUpdate();
-            }
         }
 
         protected override void Input()
@@ -65,7 +65,7 @@ namespace GD_Summer
             if (Console.KeyAvailable)
             {
                 var key = Console.ReadKey();
-                snake.CheckDirection(key);
+                snake.CheckDirection(key.Key);
             }
         }
 
@@ -76,16 +76,13 @@ namespace GD_Summer
 
         protected override void Render()
         {
-            Console.Clear();
+            StringBuilder.ClearArray();
 
             Borders.DrawBorders();
             snake.DrawPixel();
-        }
 
-        private void FPSUpdate()
-        {
-            fpsCounter.UpdateFPSCounter();
-            fpsCounter.DrawFPSCounter();
+            Console.SetCursorPosition(0, 0);
+            Console.Write(StringBuilder.ReturnString());
         }
     }
 
@@ -110,8 +107,7 @@ namespace GD_Summer
 
         public virtual void DrawPixel()
         {
-            Console.SetCursorPosition(PostionX, PostionY);
-            Console.Write(Symbol);
+            StringBuilder.AddToArray(this);
         }
     }
 
@@ -131,10 +127,9 @@ namespace GD_Summer
         public Snake(int x, int y, char symbol) : base(x, y, symbol)
         {}
 
-        public void CheckDirection(ConsoleKeyInfo keyInfo)
+        public void CheckDirection(ConsoleKey key)
         {
-            ConsoleKey keyPressed = keyInfo.Key;
-            switch (keyPressed)
+            switch (key)
             {
                 case ConsoleKey.A:
                     direction =  SnakeDirection.Left;
@@ -208,42 +203,6 @@ namespace GD_Summer
                 leftBorder.DrawPixel();
                 rightBorder.DrawPixel();
             }
-        }
-    }
-
-    public class FPSCounter
-    {
-        private long startFrameTime;
-        private long endFrameTime;
-
-        private double framesCounter;
-
-        public void DrawFPSCounter()
-        {
-            Console.SetCursorPosition(Const.MapWidth + Const.UIWidth / 2 - 3, Const.UIHeight / 2);
-            Console.Write($"FPS: {framesCounter}");
-        }
-
-        public void UpdateFPSCounter()
-        {
-            if (endFrameTime - startFrameTime > 0)
-            {
-                framesCounter = 1000 / (endFrameTime - startFrameTime);
-            }
-            else
-            {
-                framesCounter = 0;
-            }
-        }        
-
-        public void GetStartFrameTime()
-        {
-            startFrameTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-        }
-
-        public void GetEndFrameTime()
-        {
-            endFrameTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
         }
     }
 }
