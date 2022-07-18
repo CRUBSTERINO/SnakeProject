@@ -51,12 +51,15 @@ namespace GD_Summer
     public class SnakeGame : GameLoop
     {
         protected override int _timing { get; set; }
+        private int _appleSpawnDelay = 5000;
         
         private Snake snake;
+        private AppleSpawner appleSpawner;
 
         public SnakeGame()
         {
              snake = new Snake(Const.MapWidth / 2, Const.MapHeight / 2, DisplaySymbols.SnakeSymbol);
+            appleSpawner = new AppleSpawner(_appleSpawnDelay);
             _timing = 100;
         }
 
@@ -80,6 +83,7 @@ namespace GD_Summer
 
             Borders.DrawBorders();
             snake.DrawPixel();
+            GameObject.DrawGameObjects();
 
             Console.SetCursorPosition(0, 0);
             Console.Write(StringBuilder.ReturnString());
@@ -90,28 +94,10 @@ namespace GD_Summer
     {
         public const char SnakeSymbol = '*';
         public const char BorderSymbol = '█';
+        public const char AppleSymbol = '#';
     }
 
-    public class Pixel
-    {
-        public int PostionX { get; set; }
-        public int PostionY { get; set; }
-        public char Symbol { get; set; } = ' ';
-
-        public Pixel(int x, int y, char symbol)
-        {
-            PostionX = x;
-            PostionY = y;
-            Symbol = symbol;
-        }
-
-        public virtual void DrawPixel()
-        {
-            StringBuilder.AddToArray(this);
-        }
-    }
-
-    public class Snake : Pixel
+    public class Snake : GameObject
     {
         private enum SnakeDirection
         {
@@ -125,7 +111,7 @@ namespace GD_Summer
         private const int snakeMoveSpeed = 1;
 
         public Snake(int x, int y, char symbol) : base(x, y, symbol)
-        {}
+        { }
 
         public void CheckDirection(ConsoleKey key)
         {
