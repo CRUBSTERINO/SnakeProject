@@ -6,7 +6,7 @@ namespace GD_Summer
 {
     public class Apple : GameObject
     {
-        public Apple(int x, int y, char symbol) : base(x, y, symbol)
+        public Apple(int x, int y, char symbol, ConsoleColor color) : base(x, y, symbol, color)
         { }
     }
 
@@ -16,14 +16,13 @@ namespace GD_Summer
 
         private int _spawnX;
         private int _spawnY;
+
+        private Timer timer;
         public AppleSpawner(int spawnInterval)
         {
             _spawnInterval = spawnInterval;
 
-            var timerCallback = new TimerCallback(GenerateCords);
-            timerCallback += InstantiateApple;
-
-            var timer = new Timer(timerCallback, null, 0, _spawnInterval);
+            StartTimer();
         }
 
         private void GenerateCords(object state)
@@ -35,7 +34,15 @@ namespace GD_Summer
 
         private void InstantiateApple(object state)
         {
-            GameObject.Instantiate(new Apple(_spawnX, _spawnY, DisplaySymbols.AppleSymbol));
+            GameObject.Instantiate(new Apple(_spawnX, _spawnY, DisplaySymbols.AppleSymbol, DisplayColors.AppleColor));
+        }
+
+        private void StartTimer()
+        {
+            var timerCallback = new TimerCallback(GenerateCords);
+            timerCallback += InstantiateApple;
+
+            timer = new Timer(timerCallback, null, 0, _spawnInterval);
         }
     }
 }

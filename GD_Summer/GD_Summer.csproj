@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Apple.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="GameLoop.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="Pixel.cs" />

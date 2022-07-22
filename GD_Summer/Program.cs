@@ -6,18 +6,6 @@ using System.Threading;
 //Перепелицын Владимир
 namespace GD_Summer
 {
-    public static class Const
-    {
-        public const int ScreenWidth = 100;
-        public const int ScreenHeight = 45;
-
-        public const int MapWidth = 100;
-        public const int MapHeight = 45;
-
-        public const int UIWidth = 0;
-        public const int UIHeight = 0;
-    }
-
     public class Program
     {
         public static void Main(string[] args)
@@ -37,6 +25,7 @@ namespace GD_Summer
 
         public static void AddToArray(Pixel pixel)
         {
+            Console.ForegroundColor = pixel.Color;
             charArray[pixel.PostionY * Const.MapWidth + pixel.PostionX] = pixel.Symbol;
         }
 
@@ -58,7 +47,7 @@ namespace GD_Summer
 
         public SnakeGame()
         {
-             snake = new Snake(Const.MapWidth / 2, Const.MapHeight / 2, DisplaySymbols.SnakeSymbol);
+             snake = new Snake(Const.MapWidth / 2, Const.MapHeight / 2, DisplaySymbols.SnakeSymbol, DisplayColors.AppleColor);
             appleSpawner = new AppleSpawner(_appleSpawnDelay);
             _timing = 100;
         }
@@ -90,13 +79,6 @@ namespace GD_Summer
         }
     }
 
-    public static class DisplaySymbols
-    {
-        public const char SnakeSymbol = '*';
-        public const char BorderSymbol = '█';
-        public const char AppleSymbol = '#';
-    }
-
     public class Snake : GameObject
     {
         private enum SnakeDirection
@@ -106,11 +88,11 @@ namespace GD_Summer
             Up,
             Down
         }
-        /*private int snakePartsCount = 1;*/
+
         private SnakeDirection direction = SnakeDirection.Right;
         private const int snakeMoveSpeed = 1;
 
-        public Snake(int x, int y, char symbol) : base(x, y, symbol)
+        public Snake(int x, int y, char symbol, ConsoleColor color) : base(x, y, symbol, color)
         { }
 
         public void CheckDirection(ConsoleKey key)
@@ -174,8 +156,8 @@ namespace GD_Summer
         {
             for (int i = 0; i < Const.MapWidth; i++)
             {
-                var topBorder = new Pixel(i, 0, DisplaySymbols.BorderSymbol);
-                var bottomBorder = new Pixel(i, Const.MapHeight - 1, DisplaySymbols.BorderSymbol);
+                var topBorder = new Pixel(i, 0, DisplaySymbols.BorderSymbol, DisplayColors.BorderColor);
+                var bottomBorder = new Pixel(i, Const.MapHeight - 1, DisplaySymbols.BorderSymbol, DisplayColors.BorderColor);
 
                 topBorder.DrawPixel();
                 bottomBorder.DrawPixel();
@@ -183,8 +165,8 @@ namespace GD_Summer
 
             for (int i = 0; i < Const.MapHeight; i++)
             {
-                var leftBorder = new Pixel(0, i, DisplaySymbols.BorderSymbol);
-                var rightBorder = new Pixel(Const.MapWidth - 1, i, DisplaySymbols.BorderSymbol);
+                var leftBorder = new Pixel(0, i, DisplaySymbols.BorderSymbol, DisplayColors.BorderColor);
+                var rightBorder = new Pixel(Const.MapWidth - 1, i, DisplaySymbols.BorderSymbol, DisplayColors.BorderColor);
 
                 leftBorder.DrawPixel();
                 rightBorder.DrawPixel();
