@@ -72,10 +72,23 @@ namespace GD_Summer
 
             Borders.DrawBorders();
             snake.DrawPixel();
-            GameObject.DrawGameObjects();
+            GameWorld.DrawGameObjects();
 
             Console.SetCursorPosition(0, 0);
             Console.Write(StringBuilder.ReturnString());
+        }
+    }
+
+    public class GameWorld
+    {
+        public static List<GameObject> _gameObjects = new List<GameObject>();
+
+        public static void DrawGameObjects()
+        {
+            foreach (GameObject gameObject in _gameObjects)
+            {
+                gameObject.DrawPixel();
+            }
         }
     }
 
